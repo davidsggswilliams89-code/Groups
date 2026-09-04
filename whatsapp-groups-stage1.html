@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsGroups - Paid WhatsApp Groups</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7f8;color:#182126}.container{width:min(1100px,94%);margin:auto}.top{background:#075e54;color:#fff;padding:18px 0}.brand{font-size:24px;font-weight:800}.hero{background:linear-gradient(135deg,#075e54,#128c7e);color:white;padding:35px 0}.hero h1{margin:0 0 10px;font-size:32px}.hero p{margin:0;opacity:.92}.section{padding:28px 0}.grid{display:grid;gap:18px}.group-card{background:white;border-radius:18px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.08)}.group-img{width:100%;height:210px;object-fit:cover;background:#ddd}.card-body{padding:18px}.group-name{font-size:21px;font-weight:800;margin:0 0 8px}.price{font-size:24px;font-weight:900;color:#075e54;margin-bottom:14px}.bank-box{background:#f1f8f6;border-radius:12px;padding:13px;margin-bottom:15px;font-size:14px;line-height:1.7}.bank-box strong{display:inline-block;min-width:105px}.upload{border:2px dashed #b9ceca;border-radius:12px;padding:14px;background:#fafdfc}.preview{display:none;width:100%;max-height:220px;object-fit:contain;margin-top:10px;border-radius:10px}.btn{border:0;border-radius:10px;padding:13px 16px;font-weight:800;cursor:pointer;width:100%;margin-top:12px}.btn-primary{background:#075e54;color:#fff}.btn-secondary{background:#e7f2ef;color:#075e54}.btn-danger{background:#ffe7e7;color:#a30000}.status{padding:11px;border-radius:9px;margin-top:12px;font-size:14px;display:none}.success{display:block;background:#e6f7ec;color:#176b35}.error{display:block;background:#ffe9e9;color:#a00000}.info{display:block;background:#e9f3ff;color:#155a9b}.empty{text-align:center;padding:45px;background:#fff;border-radius:16px;color:#667}.admin-btn{position:fixed;right:15px;bottom:15px;border:0;border-radius:50%;width:54px;height:54px;background:#075e54;color:#fff;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;overflow:auto;padding:20px}.modal-box{background:#fff;width:min(850px,100%);margin:20px auto;border-radius:18px;padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.close{border:0;background:#eee;border-radius:8px;padding:8px 12px;cursor:pointer}.field{margin:10px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field textarea{width:100%;padding:12px;border:1px solid #ccd8d6;border-radius:9px;font-size:15px}.admin-grid{display:grid;gap:18px}.admin-card{border:1px solid #e1e7e6;border-radius:14px;padding:15px}.admin-card h3{margin-top:0}.payment{border-top:1px solid #e5e5e5;padding:12px 0}.payment:first-child{border-top:0}.small{font-size:13px;color:#667}.row{display:flex;gap:8px;flex-wrap:wrap}.row .btn{width:auto;flex:1;min-width:120px}.locked{background:#fff7dd;color:#785500;padding:10px;border-radius:9px;font-size:13px;margin-top:10px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.admin-grid{grid-template-columns:1fr 1fr}.group-img{height:240px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="container"><div class="brand">WhatsGroups</div></div></header>
+<section class="hero"><div class="container"><h1>Join Premium WhatsApp Groups</h1><p>Choose a group, make your payment, and upload your receipt for verification.</p></div></section>
+<main class="section"><div class="container"><h2>Available Groups</h2><div id="groupsGrid" class="grid"><div class="empty">Loading groups...</div></div></div></main>
+<button class="admin-btn" id="adminOpen" title="Admin">⚙</button>
+
+<div class="modal" id="adminModal">
+<div class="modal-box">
+<div class="modal-head"><h2>Admin Panel</h2><button class="close" onclick="closeAdmin()">✕</button></div>
+<div id="loginArea">
+<p class="small">Admin login is protected by Firebase Authentication.</p>
+<div class="field"><label>Email</label><input id="adminEmail" type="email" placeholder="Admin email"></div>
+<div class="field"><label>Password</label><input id="adminPassword" type="password" placeholder="Password"></div>
+<button class="btn btn-primary" onclick="adminLogin()">Login</button>
+<div id="loginStatus" class="status"></div>
+</div>
+<div id="adminArea" style="display:none">
+<div class="admin-grid">
+<section class="admin-card">
+<h3 id="formTitle">Add Group</h3>
+<div class="field"><label>Group name</label><input id="gName" placeholder="Example: VIP Business Group"></div>
+<div class="field"><label>Price (NGN)</label><input id="gPrice" type="number" min="0" placeholder="5000"></div>
+<div class="field"><label>Bank name</label><input id="gBank" placeholder="Moniepoint"></div>
+<div class="field"><label>Account number</label><input id="gAccount" placeholder="1234567890"></div>
+<div class="field"><label>Account name</label><input id="gAccountName" placeholder="Business Name"></div>
+<div class="field"><label>WhatsApp invite link</label><input id="gWhatsapp" placeholder="https://chat.whatsapp.com/..." type="url"></div>
+<div class="field"><label>Group image URL</label><input id="gImage" placeholder="https://...jpg"></div>
+<div class="row"><button class="btn btn-primary" onclick="saveGroup()">Save Group</button><button class="btn btn-secondary" onclick="resetGroupForm()">Clear</button></div>
+<div id="groupStatus" class="status"></div>
+</section>
+<section class="admin-card"><h3>Groups</h3><div id="adminGroups">Loading...</div></section>
+</div>
+<section class="admin-card" style="margin-top:18px"><h3>Payment Submissions</h3><div id="paymentsList">Loading...</div></section>
+<button class="btn btn-danger" onclick="adminLogout()">Logout</button>
+</div>
+</div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, updateDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+// Firebase configuration supplied by the site owner
+const firebaseConfig = {
+  apiKey: "AIzaSyCNViGiBKcHy-B7WF2C2xJ6-qMfqPIzqGQ",
+  authDomain: "groups-90d13.firebaseapp.com",
+  projectId: "groups-90d13",
+  storageBucket: "groups-90d13.firebasestorage.app",
+  messagingSenderId: "1071009308351",
+  appId: "1:1071009308351:web:48955d87b69bc359d4300a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let editingGroupId = null;
+let groupsCache = [];
+
+const $ = id => document.getElementById(id);
+const money = n => new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(Number(n)||0);
+const esc = s => String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+async function loadGroups(){
+  const grid=$('groupsGrid');
+  try{
+    const snap=await getDocs(collection(db,'groups'));
+    groupsCache=[];
+    snap.forEach(d=>groupsCache.push({id:d.id,...d.data()}));
+    groupsCache.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    if(!groupsCache.length){grid.innerHTML='<div class="empty">No groups have been added yet.</div>';return;}
+    grid.innerHTML=groupsCache.map(g=>`<article class="group-card">
+      <img class="group-img" src="${esc(g.image||'https://placehold.co/900x500?text=WhatsApp+Group')}" alt="${esc(g.name)}" onerror="this.src='https://placehold.co/900x500?text=Group+Image'">
+      <div class="card-body">
+        <h3 class="group-name">${esc(g.name)}</h3>
+        <div class="price">${money(g.price)}</div>
+        <div class="bank-box"><div><strong>Bank:</strong> ${esc(g.bank)}</div><div><strong>Account:</strong> ${esc(g.account)}</div><div><strong>Name:</strong> ${esc(g.accountName)}</div></div>
+        <div class="upload"><strong>Upload payment receipt</strong><input type="file" accept="image/*" data-file="${g.id}" style="width:100%;margin-top:9px"><img id="preview-${g.id}" class="preview"></div>
+        <button class="btn btn-primary" onclick="submitReceipt('${g.id}')">Verify Payment</button>
+        <div id="status-${g.id}" class="status"></div>
+        <div class="locked">🔒 WhatsApp invite link is revealed only after payment verification.</div>
+      </div></article>`).join('');
+    groupsCache.forEach(g=>{const input=document.querySelector(`input[data-file="${g.id}"]`); if(input) input.addEventListener('change',e=>{const f=e.target.files[0],p=$('preview-'+g.id);if(f){p.src=URL.createObjectURL(f);p.style.display='block'}})});
+  }catch(e){console.error(e);grid.innerHTML='<div class="empty">Could not load groups. Check your Firebase Firestore setup and rules.</div>';}
+}
+
+window.submitReceipt=async function(groupId){
+  const status=$('status-'+groupId), input=document.querySelector(`input[data-file="${groupId}"]`), file=input?.files?.[0], group=groupsCache.find(x=>x.id===groupId);
+  if(!file){status.className='status error';status.textContent='Please select your payment receipt first.';return;}
+  if(!group){status.className='status error';status.textContent='Group not found.';return;}
+  status.className='status info';status.textContent='Uploading receipt...';
+  try{
+    const safe=file.name.replace(/[^a-z0-9._-]/gi,'_');
+    const path=`paymentReceipts/${groupId}/${Date.now()}_${safe}`;
+    const storageRef=ref(storage,path);
+    await uploadBytes(storageRef,file);
+    const receiptUrl=await getDownloadURL(storageRef);
+    const payment=await addDoc(collection(db,'payments'),{groupId,groupName:group.name,amount:Number(group.price)||0,receiptUrl,status:'PENDING',createdAt:serverTimestamp()});
+    status.className='status success';status.innerHTML=`Receipt submitted successfully.<br><strong>Payment ID:</strong> ${esc(payment.id)}<br>Your receipt is awaiting verification.`;
+  }catch(e){console.error(e);status.className='status error';status.textContent='Submission failed: '+(e.message||'Check Firebase Storage/Firestore rules.');}
+}
+
+window.adminLogin=async function(){
+  const s=$('loginStatus');s.className='status info';s.textContent='Logging in...';
+  try{await signInWithEmailAndPassword(auth,$('adminEmail').value.trim(),$('adminPassword').value);s.className='status success';s.textContent='Login successful.';}catch(e){s.className='status error';s.textContent=e.message;}
+}
+window.adminLogout=()=>signOut(auth);
+window.closeAdmin=()=>{$('adminModal').style.display='none'};
+window.resetGroupForm=function(){editingGroupId=null;$('formTitle').textContent='Add Group';['gName','gPrice','gBank','gAccount','gAccountName','gWhatsapp','gImage'].forEach(x=>$(x).value='');$('groupStatus').style.display='none'};
+window.saveGroup=async function(){
+  const data={name:$('gName').value.trim(),price:Number($('gPrice').value),bank:$('gBank').value.trim(),account:$('gAccount').value.trim(),accountName:$('gAccountName').value.trim(),whatsappLink:$('gWhatsapp').value.trim(),image:$('gImage').value.trim(),updatedAt:serverTimestamp()};
+  const s=$('groupStatus');
+  if(!data.name||!data.price||!data.bank||!data.account||!data.accountName){s.className='status error';s.textContent='Please fill all required group fields.';return;}
+  try{if(editingGroupId) await updateDoc(doc(db,'groups',editingGroupId),data); else await addDoc(collection(db,'groups'),{...data,createdAt:serverTimestamp()});s.className='status success';s.textContent='Group saved successfully.';resetGroupForm();await loadGroups();await loadAdminGroups();}catch(e){s.className='status error';s.textContent=e.message;}
+}
+window.editGroup=function(id){const g=groupsCache.find(x=>x.id===id);if(!g)return;editingGroupId=id;$('formTitle').textContent='Edit Group';$('gName').value=g.name||'';$('gPrice').value=g.price||'';$('gBank').value=g.bank||'';$('gAccount').value=g.account||'';$('gAccountName').value=g.accountName||'';$('gWhatsapp').value=g.whatsappLink||'';$('gImage').value=g.image||'';window.scrollTo({top:0,behavior:'smooth'});}
+window.deleteGroup=async function(id){if(!confirm('Delete this group?'))return;try{await deleteDoc(doc(db,'groups',id));await loadGroups();await loadAdminGroups();}catch(e){alert(e.message)}};
+window.setPaymentStatus=async function(id,status){try{await updateDoc(doc(db,'payments',id),{status,verifiedAt:serverTimestamp()});await loadPayments();}catch(e){alert(e.message)}};
+
+async function loadAdminGroups(){const el=$('adminGroups');if(!el)return;try{const snap=await getDocs(collection(db,'groups'));let arr=[];snap.forEach(d=>arr.push({id:d.id,...d.data()}));if(!arr.length){el.innerHTML='<div class="small">No groups yet.</div>';return}el.innerHTML=arr.map(g=>`<div class="payment"><strong>${esc(g.name)}</strong><div class="small">${money(g.price)} • ${esc(g.bank)} • ${esc(g.account)}</div><div class="row"><button class="btn btn-secondary" onclick="editGroup('${g.id}')">Edit</button><button class="btn btn-danger" onclick="deleteGroup('${g.id}')">Delete</button></div></div>`).join('')}catch(e){el.textContent=e.message}}
+async function loadPayments(){const el=$('paymentsList');if(!el)return;try{const snap=await getDocs(collection(db,'payments'));let arr=[];snap.forEach(d=>arr.push({id:d.id,...d.data()}));arr.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));if(!arr.length){el.innerHTML='<div class="small">No payment submissions yet.</div>';return}el.innerHTML=arr.map(p=>`<div class="payment"><strong>${esc(p.groupName||'Group')}</strong><div class="small">Amount: ${money(p.amount)}<br>Status: <strong>${esc(p.status||'PENDING')}</strong><br>ID: ${esc(p.id)}</div><p><a href="${esc(p.receiptUrl)}" target="_blank" rel="noopener">View receipt</a></p><div class="row"><button class="btn btn-primary" onclick="setPaymentStatus('${p.id}','VERIFIED')">Mark Verified</button><button class="btn btn-danger" onclick="setPaymentStatus('${p.id}','FAILED')">Mark Failed</button></div></div>`).join('')}catch(e){el.textContent=e.message}}
+
+$('adminOpen').addEventListener('click',()=>{$('adminModal').style.display='block'});
+onAuthStateChanged(auth,async user=>{if(user){$('loginArea').style.display='none';$('adminArea').style.display='block';await loadAdminGroups();await loadPayments();}else{$('loginArea').style.display='block';$('adminArea').style.display='none';}});
+loadGroups();
+</script>
+</body>
+</html>
